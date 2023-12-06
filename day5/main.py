@@ -24,11 +24,13 @@ def run(part=1, file='test'):
     seeds = [int(seed) for seed in seeds_line.split(' ')]
     
     if part == 2:
+        number_of_seeds = 0
         new_seed_pairs = []
         while len(seeds) > 0:
             seed_start_pair = seeds.pop(0)
             seed_length_pair = seeds.pop(0)
-            new_seed_pairs.extend(list(range(seed_start_pair, seed_start_pair + seed_length_pair)))
+            # new_seed_pairs.extend(list(range(seed_start_pair, seed_start_pair + seed_length_pair)))
+            number_of_seeds += seed_length_pair
         seeds = new_seed_pairs
 
     lines.pop(0) # remove empty line
