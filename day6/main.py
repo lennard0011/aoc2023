@@ -1,6 +1,7 @@
 def parse_digits(line):
     return [int(values) for values in line.split(' ') if values.isdigit()]
 
+
 def parse_digits_joined(line):
     all_digits =  [int(values) for values in line.split(' ') if values.isdigit()]
     total_number = ''
@@ -18,6 +19,7 @@ def parse_game(lines, parse_function):
         games.append({'time': time, 'distance': distance})
     return games
 
+
 def find_winning_options(game):
     winning_options = []
     
@@ -29,6 +31,7 @@ def find_winning_options(game):
 
     return winning_options
 
+
 def find_winning_options_many(game):
     summed = game['time']
     multiplied = game['distance']
@@ -39,20 +42,22 @@ def find_winning_options_many(game):
 
     while True:
         current_distance = current_button_time * (summed - current_button_time)
-        print(multiplied - current_distance, current_button_time, step_size)
         if current_distance > multiplied:
             current_button_time -= step_size
         else:
             current_button_time += step_size            
-        if prev_prev_button_time == current_button_time:
-            return current_button_time
+        if prev_prev_button_time == current_button_time and current_distance > multiplied:
+            # in this case, the previous button time was the last one that was valid
+            break
         step_size = max(int(step_size * 0.99), 1)
         prev_prev_button_time = prev_button_time
         prev_button_time = current_button_time
+    final_button_time = prev_button_time
+    max_button_time = summed - final_button_time
+
+    # plus 2 because includes final_button_time and max_button_time and range is exclusive
+    return range(max_button_time - final_button_time + 1)
         
-
-    # first we are going to find the border place of winning where 
-
 
 def run(part=1, file='test'):
     with open(f'day6/{file}.txt') as f:
@@ -64,8 +69,6 @@ def run(part=1, file='test'):
     for game in games:
         winning_options = find_winning_options(game) if part == 1 else find_winning_options_many(game)
         possibilities_to_win *= len(winning_options)
-        print(len(winning_options))
     print(possibilities_to_win)
-
 
 run(2, 'input')
