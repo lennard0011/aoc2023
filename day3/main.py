@@ -168,7 +168,7 @@ def run(part=1, file='test'):
                 # if the char at grid x,y is a *, we need to check if it is a gear.
                 # it is a gear if it connects to two seperate numbers.
                 # if it is a gear, we multiply the two numbers and add it to the answer.
-                if grid[y][x] is not '*':
+                if grid[y][x] != '*':
                     x += 1
                     continue
 
