@@ -1,3 +1,16 @@
+import math
+
+def find_lcm_of_list(numbers):
+    if not numbers:
+        return None
+    
+    lcm = numbers[0]
+    
+    for i in range(1, len(numbers)):
+        lcm = lcm * numbers[i] // math.gcd(lcm, numbers[i])
+    
+    return lcm
+
 def parse_children_string(children_string):
     [left, right] = children_string.replace("(", "").replace(")", "").split(", ")
     return left, right
@@ -22,15 +35,26 @@ def run(part=1, file='test'):
 
     cycle_lengths = []
 
-    while (not all([current_node in end_nodes for current_node in current_nodes])):
-        # check all current_nodes. If they are an end node, remove them from the list and add the cycle.
-
+    while (len(current_nodes) > 0 and not all([current_node in end_nodes for current_node in current_nodes])):
         direction = directions[direction_index % len(directions)]
         current_nodes = [route_map[current_node][0] if direction == 'L' else route_map[current_node][1] for current_node in current_nodes]
         direction_index += 1
-    print(direction_index)
+
+        if part == 2:
+            finished_nodes = [current_node for current_node in current_nodes if current_node in end_nodes]
+            current_nodes = [current_node for current_node in current_nodes if current_node not in end_nodes]
+            cycle_lengths.extend([direction_index for _ in range(len(finished_nodes))])
+
+    if part == 2:
+        print(cycle_lengths)
+        answer = find_lcm_of_list(cycle_lengths)
+        print('steps:', answer)
+    if part == 1:
+        print('steps', direction_index)
         
 
 # 251553405 too high
+# part 2: 147826826783 too low  
+#         11678319315857
 
-run(1, 'input')
+run(2, 'input')
