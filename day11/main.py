@@ -1,4 +1,3 @@
-
 def run(part=1, file='test'):
     with open(f'day11/{file}.txt') as f:
         lines = f.readlines()
