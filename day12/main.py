@@ -1,36 +1,44 @@
 def format_counters(counters_line):
-    counters = [int(counter) for counter in counters_line.split(',')]
+    counters = tuple([int(counter) for counter in counters_line.split(',')])
     return counters
 
-def get_sequences(line):
-    sequences = [len(seq) for seq in line.split('.') if '#' in seq]
-    return sequences
+cache = {}
 
-def get_options(puzzle):
-    solutions = []
-    if '?' not in puzzle:
-        return [puzzle]
-    for i in range(len(puzzle)):
-        if puzzle[i] != '?':
-            continue
-        new_dot_solution = puzzle[:i] + '.' + puzzle[i+1:]
-        dot_solutions = get_options(new_dot_solution)
-        new_sharp_solution = puzzle[:i] + '#' + puzzle[i+1:]
-        sharp_solutions = get_options(new_sharp_solution)
-        solutions += dot_solutions + sharp_solutions
-        break
-    return solutions
+def get_options_v2(puzzle, counters):
+    key = (puzzle, counters)
+    if key in cache:
+        return cache[key]
+    
+    if puzzle == "":
+        return 1 if counters == () else 0
+    if counters == ():
+        return 0 if "#" in puzzle else 1
+    
+    options = 0
 
-def verify_solution(puzzle, counters):
-    sequences = get_sequences(puzzle)
-    return sequences == counters
+    if puzzle[0] in ".?":
+        options += get_options_v2(puzzle[1:], counters)
 
-def get_number_of_options(line):
+    if puzzle[0] in '#?':
+        if counters[0] <= len(puzzle) and "." not in puzzle[:counters[0]] and (counters[0] == len(puzzle) or puzzle[counters[0]] != "#"):
+            options += get_options_v2(puzzle[counters[0] + 1:], counters[1:])
+
+    cache[key] = options
+    
+    return options
+
+
+def get_number_of_options(line, part=1):
     [puzzle, counters] = line.split(' ')
+    
+    if part == 2:
+        puzzle = f"{puzzle}?{puzzle}?{puzzle}?{puzzle}?{puzzle}"
+        counters = f"{counters},{counters},{counters},{counters},{counters}"
+
     counters = format_counters(counters)
-    options = get_options(puzzle)
-    valid_options = [option for option in options if verify_solution(option, counters)]
-    return len(valid_options)
+    options = get_options_v2(puzzle, counters)
+    return options
+
 
 def run(part=1, file='test'):
     with open(f'day12/{file}.txt') as f:
@@ -38,12 +46,10 @@ def run(part=1, file='test'):
 
     number_of_options = 0
 
-    count = 0
     for line in lines:
         line = line.strip('\n')
-        number_of_options += get_number_of_options(line)
-        count += 1
-        print(count, number_of_options)
-    print(number_of_options)
+        current_number_of_options = get_number_of_options(line, part)
+        number_of_options += current_number_of_options
+    print("total solutions: ",number_of_options)
 
-run(1, 'input')
+run(2, 'input')
